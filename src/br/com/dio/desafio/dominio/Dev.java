@@ -6,6 +6,21 @@ public class Dev {
     private String nome;
     private Set<Conteudo> conteudosInscritos = new LinkedHashSet<>();
     private Set<Conteudo> conteudosConcluidos = new LinkedHashSet<>();
+    private Set<Certificado> certificados = new LinkedHashSet<>();
+
+    public void showDevStatus() {
+        System.out.printf("Conteúdos Inscritos de %s: %s\n", nome, conteudosInscritos);
+        System.out.printf("Conteúdos Concluídos de %s: %s\n", nome, conteudosConcluidos);
+
+        System.out.println("------------------------------------------------------");
+        System.out.println("Certificados:");
+
+        for (Certificado certificado : certificados) {
+            certificado.emitirCertificado();
+        }
+
+        System.out.println("------------------------------------------------------");
+    }
 
     public void inscreverBootcamp(Bootcamp bootcamp){
         this.conteudosInscritos.addAll(bootcamp.getConteudos());
@@ -15,6 +30,14 @@ public class Dev {
     public void progredir() {
         Optional<Conteudo> conteudo = this.conteudosInscritos.stream().findFirst();
         if(conteudo.isPresent()) {
+            if (conteudo.get() instanceof Curso) {
+                Certificado certificado = new Certificado(
+                        (Curso)conteudo.get(),
+                        this
+                );
+                certificados.add(certificado);
+            }
+
             this.conteudosConcluidos.add(conteudo.get());
             this.conteudosInscritos.remove(conteudo.get());
         } else {
